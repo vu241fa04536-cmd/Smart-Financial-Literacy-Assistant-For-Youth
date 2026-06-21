@@ -94,10 +94,196 @@ async function run() {
       return d;
     };
 
-    // Generate 4 months of realistic data for demo@student.com
-    const generateMonthlyTransactions = (userId, monthOffset, income, expenses) => {
-      const baseDate = new Date(now);
-      baseDate.setMonth(baseDate.getMonth() - monthOffset);
+    // Generate 4 months of comprehensive data for demo@student.com
+    const generate4MonthsData = (userId, monthlyIncome) => {
+      const transactions = [];
+      
+      for (let month = 0; month < 4; month++) {
+        const monthDate = new Date(now);
+        monthDate.setMonth(monthDate.getMonth() - month);
+        
+        // Monthly income (salary on 1st)
+        transactions.push({
+          userId,
+          type: 'income',
+          category: 'salary',
+          amount: monthlyIncome,
+          description: 'Monthly Salary',
+          date: new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
+        });
+        
+        // Rent (fixed - 5th of every month)
+        transactions.push({
+          userId,
+          type: 'expense',
+          category: 'rent',
+          amount: 12000,
+          description: 'Monthly Rent',
+          date: new Date(monthDate.getFullYear(), monthDate.getMonth(), 5)
+        });
+        
+        // Groceries (weekly - 4 times per month)
+        for (let week = 0; week < 4; week++) {
+          transactions.push({
+            userId,
+            type: 'expense',
+            category: 'food',
+            amount: Math.floor(Math.random() * 1000) + 1500, // 1500-2500
+            description: 'Groceries',
+            date: new Date(monthDate.getFullYear(), monthDate.getMonth(), 7 + (week * 7))
+          });
+        }
+        
+        // Transport (metro/bus - random days)
+        for (let i = 0; i < 15; i++) {
+          transactions.push({
+            userId,
+            type: 'expense',
+            category: 'transport',
+            amount: Math.floor(Math.random() * 100) + 50, // 50-150
+            description: Math.random() > 0.5 ? 'Metro' : 'Bus',
+            date: new Date(monthDate.getFullYear(), monthDate.getMonth(), Math.floor(Math.random() * 28) + 1)
+          });
+        }
+        
+        // Entertainment (movies, dining out)
+        const entertainmentCount = Math.floor(Math.random() * 6) + 4; // 4-10 times
+        for (let i = 0; i < entertainmentCount; i++) {
+          const activities = [
+            { desc: 'Movie Ticket', amount: [300, 500] },
+            { desc: 'Dinner Out', amount: [800, 1500] },
+            { desc: 'Coffee', amount: [150, 300] },
+            { desc: 'Concert', amount: [1500, 3000] },
+            { desc: 'Gaming', amount: [500, 1000] }
+          ];
+          const activity = activities[Math.floor(Math.random() * activities.length)];
+          
+          transactions.push({
+            userId,
+            type: 'expense',
+            category: 'entertainment',
+            amount: Math.floor(Math.random() * (activity.amount[1] - activity.amount[0])) + activity.amount[0],
+            description: activity.desc,
+            date: new Date(monthDate.getFullYear(), monthDate.getMonth(), Math.floor(Math.random() * 28) + 1)
+          });
+        }
+        
+        // Shopping (clothes, electronics, misc)
+        const shoppingCount = Math.floor(Math.random() * 4) + 2; // 2-6 times
+        for (let i = 0; i < shoppingCount; i++) {
+          const items = [
+            { desc: 'Clothes', amount: [1000, 3000] },
+            { desc: 'Electronics', amount: [2000, 8000] },
+            { desc: 'Books', amount: [300, 800] },
+            { desc: 'Accessories', amount: [500, 2000] },
+            { desc: 'Shoes', amount: [1500, 4000] }
+          ];
+          const item = items[Math.floor(Math.random() * items.length)];
+          
+          transactions.push({
+            userId,
+            type: 'expense',
+            category: 'shopping',
+            amount: Math.floor(Math.random() * (item.amount[1] - item.amount[0])) + item.amount[0],
+            description: item.desc,
+            date: new Date(monthDate.getFullYear(), monthDate.getMonth(), Math.floor(Math.random() * 28) + 1)
+          });
+        }
+        
+        // Education (courses, books, fees)
+        if (Math.random() > 0.3) { // 70% chance per month
+          const educationItems = [
+            { desc: 'Online Course', amount: [1000, 3000] },
+            { desc: 'Certification', amount: [5000, 15000] },
+            { desc: 'Study Materials', amount: [500, 1500] },
+            { desc: 'Workshop', amount: [2000, 5000] }
+          ];
+          const item = educationItems[Math.floor(Math.random() * educationItems.length)];
+          
+          transactions.push({
+            userId,
+            type: 'expense',
+            category: 'education',
+            amount: Math.floor(Math.random() * (item.amount[1] - item.amount[0])) + item.amount[0],
+            description: item.desc,
+            date: new Date(monthDate.getFullYear(), monthDate.getMonth(), Math.floor(Math.random() * 28) + 1)
+          });
+        }
+        
+        // Miscellaneous expenses
+        const miscCount = Math.floor(Math.random() * 5) + 3; // 3-8 times
+        for (let i = 0; i < miscCount; i++) {
+          const miscItems = [
+            { desc: 'Medical', amount: [500, 2000] },
+            { desc: 'Utilities', amount: [1000, 3000] },
+            { desc: 'Phone Bill', amount: [300, 800] },
+            { desc: 'Internet', amount: [500, 1200] },
+            { desc: 'Gym', amount: [1000, 2000] },
+            { desc: 'Subscription', amount: [200, 1000] }
+          ];
+          const item = miscItems[Math.floor(Math.random() * miscItems.length)];
+          
+          transactions.push({
+            userId,
+            type: 'expense',
+            category: 'misc',
+            amount: Math.floor(Math.random() * (item.amount[1] - item.amount[0])) + item.amount[0],
+            description: item.desc,
+            date: new Date(monthDate.getFullYear(), monthDate.getMonth(), Math.floor(Math.random() * 28) + 1)
+          });
+        }
+        
+        // Savings (monthly - 25th of every month)
+        const savingsAmount = Math.floor(Math.random() * 3000) + 5000; // 5000-8000
+        transactions.push({
+          userId,
+          type: 'expense',
+          category: 'savings',
+          amount: savingsAmount,
+          description: 'Monthly Savings',
+          date: new Date(monthDate.getFullYear(), monthDate.getMonth(), 25)
+        });
+        
+        // Piggy Bank contributions (month-end if eligible)
+        if (month < 3) { // Only for past 3 months (not current month)
+          const piggyAmount = Math.floor(Math.random() * 1500) + 1500; // 1500-3000
+          transactions.push({
+            userId,
+            type: 'expense',
+            category: 'emergency_fund_deposit',
+            amount: piggyAmount,
+            description: 'Piggy Bank Contribution',
+            date: new Date(monthDate.getFullYear(), monthDate.getMonth(), 28)
+          });
+        }
+      }
+      
+      return transactions;
+    };
+
+    console.log('Inserting 4 months of comprehensive transaction data for demo@student.com...');
+    const demoTransactions = generate4MonthsData(studentUser._id, 40000);
+    
+    // Add some transactions for other users (less data)
+    const ankitTransactions = [
+      { userId: ankitUser._id, type: 'income', category: 'salary', amount: 50000, description: 'Salary', date: mkDate(5) },
+      { userId: ankitUser._id, type: 'expense', category: 'rent', amount: 15000, description: 'Rent', date: mkDate(4) },
+      { userId: ankitUser._id, type: 'expense', category: 'food', amount: 8000, description: 'Groceries', date: mkDate(3) },
+      { userId: ankitUser._id, type: 'expense', category: 'transport', amount: 2000, description: 'Fuel', date: mkDate(2) },
+      { userId: ankitUser._id, type: 'expense', category: 'entertainment', amount: 3000, description: 'Movies', date: mkDate(1) }
+    ];
+    
+    const riaTransactions = [
+      { userId: riaUser._id, type: 'income', category: 'salary', amount: 30000, description: 'Salary', date: mkDate(6) },
+      { userId: riaUser._id, type: 'expense', category: 'rent', amount: 8000, description: 'Rent', date: mkDate(5) },
+      { userId: riaUser._id, type: 'expense', category: 'food', amount: 5000, description: 'Groceries', date: mkDate(4) },
+      { userId: riaUser._id, type: 'expense', category: 'shopping', amount: 4000, description: 'Clothes', date: mkDate(2) },
+      { userId: riaUser._id, type: 'expense', category: 'savings', amount: 10000, description: 'Savings', date: mkDate(1) }
+    ];
+
+    const allTransactions = [...demoTransactions, ...ankitTransactions, ...riaTransactions];
+    console.log('Inserting comprehensive transaction data...');
+    const createdTransactions = await Transaction.insertMany(allTransactions);
       baseDate.setDate(1);
       
       const transactions = [];
